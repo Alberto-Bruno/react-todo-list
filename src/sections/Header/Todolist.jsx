@@ -33,6 +33,11 @@ function Todolist() {
     updatedList.splice(index, 1);
     setListAdd(updatedList);
   };
+   // Funzione per eliminare tutta la lista
+  const removeAll = () => {
+    setListAdd([]);
+  };
+
 
 
   //Funzione per tasto premuto "Enter" per aggiungere un elemento alla lista"
@@ -54,6 +59,11 @@ function Todolist() {
           onKeyDown={handleKeyPress}
         />
         <button className='btn btn-outline-primary' type='button' onClick={addList}>Aggiungi</button>
+      </div>
+      <div className='mb-3'>
+        <button className='btn btn-outline-danger' type='button' onClick={removeAll}>
+          Elimina
+        </button>
       </div>
       <ul className='list-group'>
         {listAdd.map((item, index) => (
