@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { MdDeleteForever } from "react-icons/md";
 import './todolist.css'
 
 
@@ -7,6 +8,8 @@ function Todolist() {
   const [listAdd, setListAdd] = useState([]);
   //Stato per memorizzare il valore dell'input
   const [inputValue, setInputValue] = useState('');
+  //Stato per tenere traccia degli elementi selezionati della lista
+  const [selectedItems, setSelectedItems] = useState([]);
 
 
   //Effetto per caricare gli elementi dalla Local Storage al montaggio del componente
@@ -39,7 +42,6 @@ function Todolist() {
   };
 
 
-
   //Funzione per tasto premuto "Enter" per aggiungere un elemento alla lista"
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
@@ -48,8 +50,38 @@ function Todolist() {
   };
 
 
+  const toggleSelection = (index) => {
+    const updatedSelectedItems = [...selectedItems];
+    const isItemSelected = updatedSelectedItems.includes(index);
+
+    if (isItemSelected) {
+      const indexToRemove = updatedSelectedItems.indexOf(index);
+      updatedSelectedItems.splice(indexToRemove, 1);
+    } else {
+      updatedSelectedItems.push(index);
+    }
+
+    setSelectedItems(updatedSelectedItems);
+  };
+
+  const deleteSelected = () => {
+    const updatedList = listAdd.filter((_, index) => !selectedItems.includes(index));
+    setListAdd(updatedList);
+    setSelectedItems([]);
+  };
+
+  const toggleAll = () => {
+    if (selectedItems.length === listAdd.length) {
+      setSelectedItems([]);
+    } else {
+      const allIndexes = Array.from({ length: listAdd.length }, (_, i) => i);
+      setSelectedItems(allIndexes);
+    }
+  };
+
+
   return (
-    <div className='container'>
+    <div className='container my-5'>
       <h1 className='mt-4 text-center'>Todo List</h1>
       <div className='input-group mb-3'>
         <input className='form-control'
@@ -62,15 +94,24 @@ function Todolist() {
       </div>
       <div className='mb-3'>
         <button className='btn btn-outline-danger' type='button' onClick={removeAll}>
-          Elimina
+          Elimina lista
+        </button>
+        <button className='btn btn-outline-danger mr-2' type='button' onClick={deleteSelected}>
+          Elimina Selezionati
+        </button>
+        <button className='btn btn-outline-secondary' type='button' onClick={toggleAll}>
+          {selectedItems.length === listAdd.length ? 'Deseleziona Tutto' : 'Seleziona Tutto'}
         </button>
       </div>
       <ul className='list-group'>
         {listAdd.map((item, index) => (
-          <li className='list-group-item d-flex justify-content-between align-items-center' key={index}>
+          <li className={`list-group-item d-flex justify-content-between align-items-center ${
+              selectedItems.includes(index) ? 'list-group-item-info' : ''
+            }`}
+            onClick={() => toggleSelection(index)}>
             {item}{' '}
             <button className="btn btn-danger" onClick={() => removeList(index)}>
-              X
+              <MdDeleteForever />
             </button>
           </li>
         ))}
